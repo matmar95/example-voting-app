@@ -103,14 +103,10 @@ jobs:
         run: docker pull matmar95/sysdig-cli-scanner:latest
 
       - name: Sysdig CLI Scan
-        env:
-          # Il tuo token Sysdig, definito come segreto
-          SECURE_API_TOKEN: ${{ secrets.SYSDIG_TOKEN }}
         run: |
-          # Montiamo la socket Docker per permettere allo scanner 
-          # di analizzare l'immagine locale
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
+            -e SECURE_API_TOKEN=${{ secrets.SYSDIG_TOKEN }} \
             matmar95/sysdig-cli-scanner:latest \
             --apiurl=https://us2.app.sysdig.com \
             matmar95/examplevotingapp_result:latest
