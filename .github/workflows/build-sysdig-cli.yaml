@@ -1,0 +1,37 @@
+name: Build and Push Sysdig CLI Scanner Image
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'sysdig-cli/**'
+      - '.github/workflows/build-sysdig-cli.yml'
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - 'sysdig-cli/**'
+      - '.github/workflows/build-sysdig-cli.yml'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Docker login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Image
+        run: |
+          # Costruisce l'immagine usando la Dockerfile in sysdig-cli/
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/sysdig-cli-scanner:latest sysdig-cli
+          
+          # Esegue il push sul repository Docker Hub
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/sysdig-cli-scanner:latest
