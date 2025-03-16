@@ -51,8 +51,8 @@ jobs:
       ### A list of the account/repo names for docker build. List should match what's enabled above
       ### defaults to:
       image-names: |
-        ghcr.io/dockersamples/example-voting-app-vote
-        dockersamples/examplevotingapp_vote
+        ghcr.io/matmar95/example-voting-app-vote
+        matmar95/examplevotingapp_vote
       
       ### REQUIRED set rules for tagging images, based on special action syntax:
       ### https://github.com/docker/metadata-action#tags-input
@@ -80,3 +80,33 @@ jobs:
       ### Create a PR comment with image tags and labels
       ### defaults to false
       # comment-enable: false
+  scan-result:
+    name: Sysdig CLI Scan (Result)
+    runs-on: ubuntu-latest
+
+    needs: [call-docker-build]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Docker login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Pull the newly built image (optional)
+        run: docker pull matmar95/examplevotingapp_vote:latest
+
+      - name: Pull Sysdig Scanner image
+        run: docker pull matmar95/sysdig-cli-scanner:latest
+
+      - name: Sysdig CLI Scan
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -e SECURE_API_TOKEN=${{ secrets.SYSDIG_TOKEN }} \
+            matmar95/sysdig-cli-scanner:latest \
+            --apiurl=https://us2.app.sysdig.com \
+            matmar95/examplevotingapp_vote:latest

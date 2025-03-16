@@ -99,7 +99,7 @@ jobs:
       - name: Pull the newly built image (optional)
         run: docker pull matmar95/examplevotingapp_result:latest
 
-      - name: Pull your Sysdig Scanner image
+      - name: Pull Sysdig Scanner image
         run: docker pull matmar95/sysdig-cli-scanner:latest
 
       - name: Sysdig CLI Scan
