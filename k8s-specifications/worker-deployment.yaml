@@ -15,5 +15,5 @@ spec:
         app: worker
     spec:
       containers:
-      - image: matmar95/examplevotingapp_worker
+      - image: matmar95/examplevotingapp_worker:latest
         name: worker
